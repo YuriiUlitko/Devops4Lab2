@@ -1,0 +1,47 @@
+name: Lab 2 CD Simulation
+
+on:
+  push:
+    branches: [ "main" ] # Спрацьовує при пуші в гілку main
+
+jobs:
+  # Етап 1: Тестування та Збірка (CI)
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Simulation of Tests
+        run: |
+          echo "Running unit tests..."
+          echo "All tests passed!"
+
+      - name: Prepare Artifacts
+        run: |
+          mkdir public
+          cp index.html public/
+          
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  # Етап 2: Розгортання (CD)
+  deploy:
+    needs: build # Запускається тільки якщо build успішний
+    runs-on: ubuntu-latest
+    
+    # Дозволи для GitHub Pages
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
