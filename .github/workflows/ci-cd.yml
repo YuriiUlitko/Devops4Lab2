@@ -26,6 +26,15 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
+          
+      - name: Check Secrets Presence
+        run: |
+          if [ -n "${{ secrets.HOST }}" ]; then
+            echo "Secret HOST is configured."
+          else
+            echo "Secret HOST is MISSING."
+            exit 1
+          fi    
 
   # Етап 2: Розгортання (CD)
   deploy:
